@@ -5,10 +5,10 @@ import { Modal, Button, Form, Input, Checkbox } from 'antd';
 import swal from 'sweetalert';
 
 
-
-const { Meta } = Card;
 const User = ({ user, handleDeleteUser }) => {
+    //Destructuring id and username of user object
     const { id, username } = user;
+    //States to store data
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
     const [phone, setPhone] = useState(user.phone);
@@ -20,6 +20,7 @@ const User = ({ user, handleDeleteUser }) => {
 
     const [form] = Form.useForm();
 
+    //Like button function
     const handleLike = (e) => {
         setLiked(true);
     }
@@ -28,7 +29,15 @@ const User = ({ user, handleDeleteUser }) => {
         setIsModalVisible(true);
     };
 
+    //Form Submit Function
     const handleSubmit = (values) => {
+        for (const field in values) {
+            if (/^\s*$/.test(values[field]) === true) {
+                swal("Invalid Input", `Please provide the ${field} to continue. You have typed spaces only in the input field.`, "error");
+                return;
+            }
+        }
+
         setName(values.name);
         setEmail(values.email);
         setPhone(values.phone);
@@ -38,17 +47,6 @@ const User = ({ user, handleDeleteUser }) => {
     };
 
 
-
-    const handleOk = () => {
-        // for (const field in updatedData) {
-        //     if (/^\s*$/.test(updatedData[field]) === true) {
-        //         swal("Invalid Input", `Please provide the ${field} to continue.`, "error");
-
-        //     }
-        // }
-
-
-    };
 
     const handleCancel = () => {
         setIsModalVisible(false);

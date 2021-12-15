@@ -15,7 +15,9 @@ const Home = () => {
             })
     }, [])
 
+    //Delete user function calling because setUsers state is in this component so calling it here and prop drilling it to User component.
     const handleDeleteUser = id => {
+        //Asking confirmation to improve UX
         swal({
             title: "Are you sure?",
             text: "User will be removed from the list!",
@@ -38,6 +40,7 @@ const Home = () => {
     return (
         <div>
             {
+                // Checking whether data is loading or not and also whether data is zero or not
                 users.length
                     ?
                     <Users
@@ -47,12 +50,14 @@ const Home = () => {
                     :
                     users === 0
                         ?
+                        // Loading Spinner to improve UX
                         <div class="spinner" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <div class="bounce1"></div>
                             <div class="bounce2"></div>
                             <div class="bounce3"></div>
                         </div>
                         :
+                        // Message to show on UI for good UX
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
                             <div>
                                 <h1 className="fw-bold">No Users Available</h1>
