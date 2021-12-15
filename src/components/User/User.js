@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Col, Card, Avatar } from 'antd';
 import { MailOutlined, PhoneOutlined, GlobalOutlined, EditOutlined, DeleteFilled, HeartOutlined, HeartFilled, MessageOutlined } from '@ant-design/icons';
 import { Modal, Button, Form, Input, Checkbox } from 'antd';
+import swal from 'sweetalert';
+
 
 
 const { Meta } = Card;
-const User = ({ user }) => {
-    const { username } = user;
+const User = ({ user, handleDeleteUser }) => {
+    const { id, username } = user;
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
     const [phone, setPhone] = useState(user.phone);
@@ -14,9 +16,9 @@ const User = ({ user }) => {
 
     const [liked, setLiked] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [updatedData, setUpdatedData] = useState({});
 
 
+    const [form] = Form.useForm();
 
     const handleLike = (e) => {
         setLiked(true);
@@ -26,31 +28,38 @@ const User = ({ user }) => {
         setIsModalVisible(true);
     };
 
-    const handleOk = () => {
+    const handleSubmit = (values) => {
+        setName(values.name);
+        setEmail(values.email);
+        setPhone(values.phone);
+        setWebsite(values.website);
+        swal("Updated Successfully", "User information updated successfully", "success");
         setIsModalVisible(false);
-        setName(updatedData.name);
-        setEmail(updatedData.email);
-        setPhone(updatedData.phone);
-        setWebsite(updatedData.website);
+    };
+
+
+
+    const handleOk = () => {
+        // for (const field in updatedData) {
+        //     if (/^\s*$/.test(updatedData[field]) === true) {
+        //         swal("Invalid Input", `Please provide the ${field} to continue.`, "error");
+
+        //     }
+        // }
+
+
     };
 
     const handleCancel = () => {
         setIsModalVisible(false);
     };
 
-    const handleOnBlur = e => {
-        const field = e.target.name;
-        const value = e.target.value;
-        console.log(field, value)
-        const newUpdatedData = { ...updatedData };
-        newUpdatedData[field] = value;
-        setUpdatedData(newUpdatedData);
-    }
+
 
     return (
-        <Col xs={24} sm={24} md={8} lg={8} xl={6}>
+        <Col xs={24} sm={24} md={8} lg={8} xl={6} style={{ padding: '15px' }}>
             <Card
-                style={{ margin: '15px' }}
+                style={{ height: '100%' }}
                 cover={
                     <div style={{ backgroundColor: '#f5f5f5' }}>
                         <img
@@ -72,7 +81,7 @@ const User = ({ user }) => {
                         }
                     </div>,
                     <EditOutlined onClick={showModal} key="edit" style={{ fontSize: '20px' }} />,
-                    <DeleteFilled key="delete" style={{ fontSize: '20px' }} />,
+                    <DeleteFilled onClick={() => handleDeleteUser(id)} key="delete" style={{ fontSize: '20px' }} />,
                 ]}
             >
                 <div style={{ textAlign: 'start' }}>
@@ -90,43 +99,75 @@ const User = ({ user }) => {
 
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                         <GlobalOutlined style={{ fontSize: '18px' }} />
-                        <p style={{ marginLeft: '10px', marginBottom: '0px' }}>{website}</p>
+                        <p style={{ marginLeft: '10px', marginBottom: '0px' }}>
+                            http://{website}
+                        </p>
                     </div>
                 </div>
 
-                <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Modal title={`${user.name.split(' ')[0]}'s Information`} visible={isModalVisible}
+                    onOk={() => {
+                        form
+                            .validateFields()
+                            .then((values) => {
+                                form.resetFields();
+                                handleSubmit(values);
+                            })
+                            .catch((info) => {
+                                console.log('Validate Failed:', info);
+                            });
+                    }}
+                    onCancel={handleCancel}
+                    okText="Update"
+                    cancelText="Cancel"
+                >
                     <Form
+                        form={form}
                         name="basic"
                         labelCol={{ span: 8 }}
                         wrapperCol={{ span: 16 }}
-                        initialValues={{ remember: true }}
+                        initialValues={{
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            website: website
+                        }}
                         autoComplete="off"
                     >
                         <Form.Item
                             label="Name"
+                            name="name"
                             rules={[{ required: true, message: 'This field is required' }]}
                         >
-                            <Input defaultValue={name} name="name" type="text" onBlur={handleOnBlur} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label="Email"
-                            rules={[{ required: true, message: 'This field is required' }]}
+                            name="email"
+                            rules={[{
+                                required: true,
+                                message: 'This field is required'
+                            }, {
+                                type: 'email',
+                                message: 'Invalid email'
+                            }]}
                         >
-                            <Input defaultValue={email} name="email" type="email" onBlur={handleOnBlur} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label="Phone"
+                            name="phone"
                             rules={[{ required: true, message: 'This field is required' }]}
                         >
-                            <Input defaultValue={phone} name="phone" type="text" onBlur={handleOnBlur} />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label="Website"
+                            name="website"
                             rules={[{ required: true, message: 'This field is required' }]}
                         >
-                            <Input defaultValue={website} name="website" type="text" onBlur={handleOnBlur} />
+                            <Input />
                         </Form.Item>
-
                     </Form>
                 </Modal>
             </Card>

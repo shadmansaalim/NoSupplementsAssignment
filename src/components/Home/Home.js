@@ -13,9 +13,17 @@ const Home = () => {
             })
     }, [])
 
+    const handleDeleteUser = id => {
+        const remainingUsers = users.filter(user => user.id !== id);
+        setUsers(remainingUsers);
+    }
+
     return (
         <div>
-            <Users users={users}></Users>
+            <Users
+                users={users}
+                handleDeleteUser={handleDeleteUser}
+            ></Users>
         </div>
     );
 };
